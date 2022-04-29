@@ -56,6 +56,7 @@ To avoid missing WIFI adaptor problem while installing Arch Linux
 
 ```bash
 iwctl
+station wlan0 scan
 station wlan0 connect {SSID}
 quit
 ```
@@ -107,9 +108,6 @@ mount -o noatime,compress=zstd,commit=120,subvol=@snapshots /dev/mapper/luks /mn
 mount -o noatime,commit=120,subvol=@swap /dev/mapper/luks /mnt/swap/
 
 mount /dev/nvme0n1p1 /mnt/boot/
-
-genfstab -Lp /mnt >> /mnt/etc/fstab
-echo "/swap/swapfile none swap defaults 0 0" >> /mnt/etc/fstab
 ```
 
 ### Change mirror / Install packages
@@ -122,6 +120,9 @@ pacman -S reflector
 reflector -c "TH" -f 12 -l 10 -n 12 --save /etc/pacman.d/mirrorlist
 
 pacstrap /mnt base base-devel linux linux-firmware amd-ucode btrfs-progs nano networkmanager
+
+genfstab -Lp /mnt >> /mnt/etc/fstab
+echo "/swap/swapfile none swap defaults 0 0" >> /mnt/etc/fstab
 ```
 
 ### Chroot set settings
@@ -131,6 +132,7 @@ Use `timedatectl list-timezones` to view all timezones
 Uncomment your language in `/etc/locale.gen` by using `nano /etc/locale.gen`
 
 ```bash
+
 arch-chroot /mnt
 timedatectl set-timezone Asia/Bangkok
 locale-gen
@@ -213,8 +215,8 @@ Now its time to `reboot` into the new system!
 ### Some workarounds
 
 ```bash
-systemctl enable --now NetworkManager
-nmcli device wifi connect "{SSID}" password "{SSIDPASSWORD}"
+sudo systemctl enable --now NetworkManager
+sudo nmcli device wifi connect "{SSID}" password "{SSIDPASSWORD}"
 ```
 
 ```bash
