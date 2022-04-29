@@ -244,7 +244,7 @@ sudo systemctl enable lightdm
 
 ```bash
 sudo pacman -Sy pipewire pipewire-pulse wireplumber
-systemctl --user start pipewire-pulse.service
+systemctl --user enable pipewire-pulse.service
 ```
 
 ```bash
