@@ -175,18 +175,19 @@ create Initramfs using `mkinitcpio -P`
 `nano /boot/loader/loader.conf` delete anything and add these few lines and save
 
 ```bash
-default	arch.conf
-timeout	3
-editor	0
+default         arch.conf
+timeout         4
+console-mode    max
+editor          no
 ```
 
 `nano /boot/loader/entries/arch.conf` with these lines and save.
 
 ```bash
-title	Arch Linux
-linux	/vmlinuz-linux
-initrd	/amd-ucode.img
-initrd	/initramfs-linux.img
+title   Arch Linux
+linux   /vmlinuz-linux
+initrd  /amd-ucode.img
+initrd  /initramfs-linux.img
 options cryptdevice=/dev/nvme0n1p7:luks root=/dev/mapper/luks rootflags=subvol=@ rw
 ```
 
