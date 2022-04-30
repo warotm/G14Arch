@@ -234,11 +234,11 @@ passwd -l root
 ### Get X.Org / Xfce4 / LightDM / Pipewire / Bluetooth
 
 ```bash
-sudo pacman -Sy xorg xfce4 xfce4-goodies xf86-input-synaptics ttf-dejavu network-manager-applet firefox git git-lfs curl wget
+sudo pacman -Sy xorg xfce4 xfce4-goodies gvfs xf86-input-synaptics ttf-dejavu network-manager-applet firefox git git-lfs curl wget
 ```
 
 ```bash
-sudo pacman -Sy lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings
+sudo pacman -Sy lightdm lightdm-webkit2-greeter
 sudo systemctl enable lightdm
 ```
 
