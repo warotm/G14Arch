@@ -12,7 +12,7 @@ My journey with Arch Linux installation with these options
 
 ## Main references
 
-- https://github.com/Unim8trix/G14Arch
+- https://github.com/Unim8trix/G14Arch < Mostly based on this guide
 - https://raphtlw.medium.com/guide-to-installing-arch-on-zephyrus-g14-21b93d2e9f49
 - https://wiki.archlinux.org/title/installation_guide
 - https://asus-linux.org/wiki/arch-guide/
@@ -110,7 +110,7 @@ mount -o noatime,commit=120,subvol=@swap /dev/mapper/luks /mnt/swap/
 mount /dev/nvme0n1p1 /mnt/boot/
 ```
 
-### Change mirror / Install packages
+### Change mirror / Install packages / Generate FSTAB
 
 Change `"TH"` to your country code
 
@@ -132,7 +132,6 @@ Use `timedatectl list-timezones` to view all timezones
 Uncomment your language in `/etc/locale.gen` by using `nano /etc/locale.gen`
 
 ```bash
-
 arch-chroot /mnt
 timedatectl set-timezone Asia/Bangkok
 locale-gen
@@ -256,7 +255,7 @@ sudo systemctl enable --now bluetooth.service
 
 ### Oh-My-ZSH
 
-I like to use oh-my-zsh with Powerlevel10K theme
+oh-my-zsh with Powerlevel10K theme
 
 ```bash
 sudo pacman -Sy zsh zsh-completions
@@ -295,5 +294,66 @@ sudo systemctl enable --now supergfxd
 systemctl --user enable --now asus-notify
 ```
 
+After this reboot, everything should be fine
+
+### Install `yay` for AUR package manager
+
+```bash
+git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si
+```
+
 ### Theming
 [Linux Scoop channel](https://www.youtube.com/watch?v=X3siZNJN3ec)
+
+### Enable Autologin
+
+Open `/etc/lightdm/lightdm.conf` and add theese under `[Seat:*]`
+
+```bash
+pam-service=lightdm
+pam-autologin-service=lightdm-autologin
+autologin-user={MYUSERNAME}
+autologin-user-timeout=0
+session-wrapper=/etc/lightdm/Xsession
+greeter-session=lightdm-greeter
+```
+
+Create the group autologin and add user
+
+```bash
+sudo groupadd -r autologin
+sudo gpasswd -a {MYUSERNAME} autologin
+```
+
+### Plymouth for LUKs' Password Prompt during Boot
+
+```bash
+yay -S plymouth
+```
+
+Now modify the Hooks for the Initramfs using `/etc/mkinitcpio.conf`, Plymouth must be right after `base udev`. Delete `encrypt` hook, it will be replaced by `plymouth-encrypt`
+
+```bash
+HOOKS="base udev plymouth plymouth-encrypt autodetect modconf block btrfs filesystems keyboard fsck
+```
+
+Run `mkinitcpio -P`
+
+Add kernel-parameters to make silent boot. Edit `/boot/loader/entries/arch.conf` and add options
+
+```bash
+...rootflags=subvol=@ quiet splash loglevel=3 rd.systemd.show_status=auto rd.udev.log_priority=3 vt.global_cursor_default=0 rw
+```
+
+Optional: replace LightDM with the plymouth variant
+
+Make sure that `lightdm` can run correctly before moving to `lightdm-plymouth`. I get halting loop with misspelling in `lightdm.conf`.
+
+```bash
+sudo systemctl disable lightdm
+sudo systemctl enable lightdm-plymouth
+```
+
+For Plymouth Theming and Options, check [Plymouth on Arch Wiki](https://wiki.archlinux.org/title/plymouth)
